@@ -50,6 +50,7 @@ def save_report(report_data: Dict[str, Any], output_path: Union[str, Path]) -> N
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(report_data, f, indent=2)
+        f.write("\n")
 
 
 def generate_summary_text(simulation_result: SimulationResult) -> str:

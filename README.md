@@ -26,7 +26,7 @@ The **Nexgensis Delivery System** models operations for a delivery company (**Fa
 - **Bonus Capabilities**:
   - **ASCII Map Visualization**: 2D ASCII grid rendering of warehouses, agents, and package destinations (`--visualize`).
   - **CSV Export**: Performance metrics exported to CSV for reporting (`--export-csv`).
-  - **Delivery Delays & Dynamic Fleet Expansion**: Handlers for random traffic delays and mid-day fleet arrivals.
+  - **Delivery Delays**: Simulation of realistic traffic delays and transit times.
 - **Zero External Runtime Dependencies**: Core system runs solely on the Python standard library; only `pytest` is used for automated testing.
 
 ---
@@ -212,7 +212,7 @@ The automated test suite verifies:
 9. **Full pipeline execution on Base Case**: Exact verification of outputs for `base_case.json`.
 10. **All 10 supplied test cases**: Parametrized automated test running against `test_case_1.json` through `test_case_10.json`.
 11. **CLI end-to-end integration**: Exit code 0 on valid inputs, non-zero exit on errors.
-12. **Bonus feature verification**: CSV exporter, ASCII map generator, traffic delay simulator, mid-day agent arrival handler.
+12. **Bonus feature verification**: CSV exporter, ASCII map generator, and traffic delay simulator.
 
 ---
 

@@ -33,7 +33,6 @@ from delivery_system.bonus import (
     render_ascii_map,
     export_performance_to_csv,
     simulate_with_delays,
-    handle_midday_agent_arrival,
 )
 
 
@@ -429,8 +428,3 @@ def test_bonus_features(tmp_path):
     delayed_res = simulate_with_delays(ags, whs, assignments, seed=42)
     assert "A1" in delayed_res
     assert delayed_res["A1"]["delay_minutes"] > 0
-
-    # 4. Mid-day agent addition
-    updated_ags = handle_midday_agent_arrival(ags, "A2", Location(30, 30), [], whs)
-    assert "A2" in updated_ags
-    assert updated_ags["A2"].initial_location == Location(30, 30)

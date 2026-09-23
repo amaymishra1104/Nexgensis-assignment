@@ -3,7 +3,6 @@ Bonus extensions for the FastBox Delivery Simulator:
 1. Route / entity visualization in ASCII grid.
 2. CSV export of agent performance and top performer.
 3. Realistic random delivery delays.
-4. Dynamic mid-day agent arrival handler.
 """
 
 from __future__ import annotations
@@ -160,17 +159,4 @@ def simulate_with_delays(
     return results
 
 
-def handle_midday_agent_arrival(
-    existing_agents: Dict[str, Agent],
-    new_agent_id: str,
-    new_agent_loc: Location,
-    remaining_packages: List[Package],
-    warehouses: Dict[str, Warehouse],
-) -> Dict[str, Agent]:
-    """
-    Bonus: Incorporates a newly joined delivery agent mid-day into the active fleet.
-    """
-    updated_agents = dict(existing_agents)
-    new_agent = Agent(id=new_agent_id, initial_location=new_agent_loc)
-    updated_agents[new_agent_id] = new_agent
-    return updated_agents
+
