@@ -18,14 +18,10 @@ from delivery_system.bonus import render_ascii_map, export_performance_to_csv
 
 
 def find_default_input() -> str:
-    """Finds sensible default input file path."""
-    candidate_paths = [
-        Path("data/base_case.json"),
-        Path("base_case.json"),
-    ]
-    for path in candidate_paths:
-        if path.is_file():
-            return str(path)
+    """Finds default input file path."""
+    default_path = Path("data/base_case.json")
+    if default_path.is_file():
+        return str(default_path)
     return "data/base_case.json"
 
 

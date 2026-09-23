@@ -1,6 +1,6 @@
 # Nexgensis Delivery System
 
-An enterprise-grade, deterministic Python logistics simulation system built for the Nexgensis Technologies Python Developer Assignment (FastBox Delivery Simulator).
+A clean, modular Python logistics simulation system implementing the Nexgensis Technologies Python Developer Assignment (FastBox Delivery Simulator).
 
 ---
 
@@ -18,7 +18,7 @@ The **Nexgensis Delivery System** models operations for a delivery company (**Fa
 ## Features
 
 - **Heterogeneous JSON Schema Normalization**: Seamlessly ingests both dictionary-based and list-based schemas for warehouses and agents, as well as aliased keys (`warehouse` vs `warehouse_id`, `destination` vs `location`).
-- **Strict Validation Layer**: Validates coordinate types, dimensions, duplicate IDs, non-existent warehouse links, NaN/Infinity values, and non-empty agent fleets.
+- **Strict Validation Layer**: Validates coordinate types (rejects non-numeric values and booleans), dimensions, duplicate IDs, non-existent warehouse links, NaN/Infinity values, and non-empty agent fleets.
 - **Deterministic Assignment Engine**: Employs Euclidean distance nearest-neighbor assignment with deterministic lexicographical tie-breaking by agent ID (`A1` before `A2`).
 - **Continuous Agent Routing Model**: Accurate physical simulation where an agent's location updates to the destination of each delivered package before proceeding to the next assigned pickup.
 - **Zero-Delivery Safety**: Agents receiving 0 packages are handled gracefully with `packages_delivered = 0`, `total_distance = 0.0`, and `efficiency = 0.0` (protected against zero-division errors and excluded from `best_agent` selection).
@@ -26,7 +26,6 @@ The **Nexgensis Delivery System** models operations for a delivery company (**Fa
 - **Bonus Capabilities**:
   - **ASCII Map Visualization**: 2D ASCII grid rendering of warehouses, agents, and package destinations (`--visualize`).
   - **CSV Export**: Performance metrics exported to CSV for reporting (`--export-csv`).
-  - **Delivery Delays**: Simulation of realistic traffic delays and transit times.
 - **Zero External Runtime Dependencies**: Core system runs solely on the Python standard library; only `pytest` is used for automated testing.
 
 ---
@@ -47,22 +46,21 @@ nexgensis-delivery-system/
 │   ├── assignment.py           # Nearest-agent assignment & tie-breaking logic
 │   ├── simulation.py           # Physical route simulation and metrics collection
 │   ├── report.py               # Output JSON formatting, summary, and serialization
-│   └── bonus.py                # ASCII map rendering, CSV export, traffic delay simulation
+│   └── bonus.py                # ASCII map rendering and CSV performance export
 │
 ├── tests/
 │   ├── __init__.py
 │   └── test_delivery_system.py # Comprehensive pytest test suite (28 tests)
 │
-├── data/                       # Normalized test datasets
+├── data/                       # Canonical test datasets
 │   ├── base_case.json
 │   └── test_cases/
 │       ├── test_case_1.json ... test_case_10.json
 │
-├── base_case.json              # Original workspace base case
-├── Python Assignment(Delivery System Test Cases)/ # Original workspace test cases
+├── Python Assignment(Delivery System).pdf # Assignment specification
 ├── report.json                 # Generated sample report
 ├── requirements.txt            # Test dependency specification (pytest)
-├── .gitignore                  # GitHub ignore specification
+├── .gitignore                  # Git ignore specification
 └── README.md                   # System documentation
 ```
 
@@ -74,7 +72,7 @@ nexgensis-delivery-system/
 4. **`delivery_system.assignment`**: Matches packages to agents based on distance from the agent's initial coordinates to the package's pickup warehouse.
 5. **`delivery_system.simulation`**: Executes the physical travel loop, tracks package deliveries, enforces single-delivery constraints, and evaluates efficiency.
 6. **`delivery_system.report`**: Formats simulation metrics into the final JSON specification and renders console summaries.
-7. **`delivery_system.bonus`**: Provides ASCII route rendering, CSV performance export, and delivery delay modeling.
+7. **`delivery_system.bonus`**: Provides ASCII route rendering and CSV performance export.
 
 ---
 
@@ -195,7 +193,7 @@ pytest -q
 All 28 tests pass:
 ```text
 ............................                                             [100%]
-28 passed in 1.18s
+28 passed in 0.35s
 ```
 
 ### Test Coverage Highlights
@@ -207,18 +205,18 @@ The automated test suite verifies:
 4. **Multiple package handling**: Queuing multiple packages per agent in input order.
 5. **Continuous agent movement**: Accurate coordinate transitions across sequential delivery legs.
 6. **Zero-delivery agents**: Zero division safety, correct metric output, exclusion from best agent.
-7. **Validation & error detection**: Duplicate package IDs, non-existent warehouses, malformed/non-numeric coordinates, empty agents.
+7. **Validation & error detection**: Duplicate package IDs, non-existent warehouses, malformed/non-numeric coordinates (including strict boolean coordinate rejection), empty agents.
 8. **Schema variants**: Both dictionary and list representations for warehouses and agents.
 9. **Full pipeline execution on Base Case**: Exact verification of outputs for `base_case.json`.
 10. **All 10 supplied test cases**: Parametrized automated test running against `test_case_1.json` through `test_case_10.json`.
 11. **CLI end-to-end integration**: Exit code 0 on valid inputs, non-zero exit on errors.
-12. **Bonus feature verification**: CSV exporter, ASCII map generator, and traffic delay simulator.
+12. **Bonus feature verification**: CSV exporter and ASCII map generator.
 
 ---
 
 ## Design Decisions
 
-1. **Standard Library Runtime**: The core delivery system utilizes only Python 3 standard library modules (`math`, `json`, `pathlib`, `dataclasses`, `typing`, `argparse`, `csv`, `random`). This ensures 100% portability without external dependency conflicts.
+1. **Standard Library Runtime**: The core delivery system utilizes only Python 3 standard library modules (`math`, `json`, `pathlib`, `dataclasses`, `typing`, `argparse`, `csv`). This ensures 100% portability without external dependency conflicts.
 2. **Immutable Value Objects**: `Location`, `Warehouse`, and `Package` are defined as frozen dataclasses to guarantee immutability throughout the pipeline.
 3. **Explicit Error Hierarchy**: A custom exception hierarchy rooted at `DeliverySystemError` differentiates parser issues, schema validation errors, and simulation invariants.
-4. **Preservation of Original Inputs**: Original input files remain completely untouched; all variations are resolved dynamically in memory by the normalization layer.
+4. **Canonical Datasets**: Canonical test scenarios are organized cleanly under `data/` and `data/test_cases/`.

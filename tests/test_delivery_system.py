@@ -32,7 +32,6 @@ from delivery_system.report import format_report, save_report, generate_summary_
 from delivery_system.bonus import (
     render_ascii_map,
     export_performance_to_csv,
-    simulate_with_delays,
 )
 
 
@@ -263,6 +262,19 @@ def test_invalid_coordinates_validation():
     with pytest.raises(ValidationError, match="coordinates must be numeric"):
         parse_location(["10", "20"])
 
+    # Boolean coordinates (bool is a subclass of int in Python and must be explicitly rejected)
+    with pytest.raises(ValidationError, match="coordinates must be numeric"):
+        parse_location([True, False])
+
+    with pytest.raises(ValidationError, match="coordinates must be numeric"):
+        parse_location([10.0, True])
+
+    with pytest.raises(ValidationError, match="Coordinates must be numbers"):
+        Location(True, 10.0)
+
+    with pytest.raises(ValidationError, match="Coordinates must be numbers"):
+        Location(10.0, False)
+
     # Wrong length
     with pytest.raises(ValidationError, match="expected exactly 2 coordinates"):
         parse_location([10, 20, 30])
@@ -288,8 +300,6 @@ def test_packages_with_zero_agents():
 
 def test_base_case_full_simulation():
     input_file = Path("data/base_case.json")
-    if not input_file.exists():
-        input_file = Path("base_case.json")
     assert input_file.exists()
 
     whs, ags, pkgs = load_input_data(input_file)
@@ -328,8 +338,6 @@ def test_base_case_full_simulation():
 @pytest.mark.parametrize("case_num", list(range(1, 11)))
 def test_all_supplied_test_cases(case_num):
     case_path = Path(f"data/test_cases/test_case_{case_num}.json")
-    if not case_path.exists():
-        case_path = Path(f"Python Assignment(Delivery System Test Cases)/test_case_{case_num}.json")
     assert case_path.exists(), f"Test case file not found: {case_path}"
 
     whs, ags, pkgs = load_input_data(case_path)
@@ -423,8 +431,3 @@ def test_bonus_features(tmp_path):
     content = csv_file.read_text(encoding="utf-8")
     assert "agent_id,packages_delivered" in content
     assert "A1,1" in content
-
-    # 3. Delays simulation
-    delayed_res = simulate_with_delays(ags, whs, assignments, seed=42)
-    assert "A1" in delayed_res
-    assert delayed_res["A1"]["delay_minutes"] > 0

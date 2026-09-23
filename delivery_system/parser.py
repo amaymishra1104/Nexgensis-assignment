@@ -22,7 +22,12 @@ def parse_location(raw_coords: Any, context: str = "Location") -> Location:
         raise ValidationError(f"{context}: expected exactly 2 coordinates [x, y], got {len(raw_coords)}")
 
     x, y = raw_coords
-    if not isinstance(x, (int, float)) or not isinstance(y, (int, float)):
+    if (
+        not isinstance(x, (int, float))
+        or isinstance(x, bool)
+        or not isinstance(y, (int, float))
+        or isinstance(y, bool)
+    ):
         raise ValidationError(f"{context}: coordinates must be numeric, got ({type(x).__name__}, {type(y).__name__})")
 
     if math.isnan(x) or math.isnan(y) or math.isinf(x) or math.isinf(y):

@@ -1,18 +1,15 @@
 """
 Bonus extensions for the FastBox Delivery Simulator:
-1. Route / entity visualization in ASCII grid.
-2. CSV export of agent performance and top performer.
-3. Realistic random delivery delays.
+1. Route and entity visualization in an ASCII grid (--visualize).
+2. CSV export of agent performance and metrics (--export-csv).
 """
 
 from __future__ import annotations
 import csv
-import random
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
-from .models import Agent, Warehouse, Package, Location, SimulationResult
-from .distance import calculate_distance
+from .models import Agent, Warehouse, Package, SimulationResult
 
 
 def export_performance_to_csv(
@@ -110,53 +107,6 @@ def render_ascii_map(
     lines.append("+" + "-" * grid_width + "+")
 
     return "\n".join(lines)
-
-
-def simulate_with_delays(
-    agents: Dict[str, Agent],
-    warehouses: Dict[str, Warehouse],
-    assignments: Dict[str, List[Package]],
-    seed: Optional[int] = 42,
-    min_delay_mins: float = 2.0,
-    max_delay_mins: float = 15.0,
-) -> Dict[str, Dict[str, float]]:
-    """
-    Bonus: Simulates delivery operations with random traffic / handling delays.
-    Returns per-agent travel time and delay breakdowns in minutes.
-    Assumes an average travel speed of 40 distance-units per hour (0.67 units/min).
-    """
-    rng = random.Random(seed)
-    speed_units_per_min = 40.0 / 60.0
-    results: Dict[str, Dict[str, float]] = {}
-
-    for agent_id, assigned in assignments.items():
-        agent = agents[agent_id]
-        curr_loc = agent.initial_location
-        total_dist = 0.0
-        total_delay = 0.0
-
-        for pkg in assigned:
-            wh = warehouses[pkg.warehouse_id]
-            d1 = calculate_distance(curr_loc, wh.location)
-            d2 = calculate_distance(wh.location, pkg.destination)
-            total_dist += (d1 + d2)
-            curr_loc = pkg.destination
-
-            delay = rng.uniform(min_delay_mins, max_delay_mins)
-            total_delay += delay
-
-        travel_time_mins = total_dist / speed_units_per_min if speed_units_per_min > 0 else 0.0
-        total_time_mins = travel_time_mins + total_delay
-
-        results[agent_id] = {
-            "packages_delivered": float(len(assigned)),
-            "distance": round(total_dist, 2),
-            "travel_time_minutes": round(travel_time_mins, 2),
-            "delay_minutes": round(total_delay, 2),
-            "total_time_minutes": round(total_time_mins, 2),
-        }
-
-    return results
 
 
 

@@ -34,7 +34,12 @@ class Location:
     y: float
 
     def __post_init__(self) -> None:
-        if not isinstance(self.x, (int, float)) or not isinstance(self.y, (int, float)):
+        if (
+            not isinstance(self.x, (int, float))
+            or isinstance(self.x, bool)
+            or not isinstance(self.y, (int, float))
+            or isinstance(self.y, bool)
+        ):
             raise ValidationError(f"Coordinates must be numbers, got x={type(self.x).__name__}, y={type(self.y).__name__}")
         if self.x != self.x or self.y != self.y:  # NaN check
             raise ValidationError("Coordinates cannot be NaN")
